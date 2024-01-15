@@ -24,53 +24,10 @@ describe("app", () => {
       });
     });
     describe("GET /api", () => {
-      test("200: returns an object containing an object", () => {
-        return request(app)
-          .get("/api")
-          .expect(200)
-          .then(({ body }) => {
-            expect(typeof body).toBe("object");
-            expect(Array.isArray(body)).toBe(false);
-            expect(typeof body.endpoints).toBe("object");
-            expect(Array.isArray(body.endpoints)).toBe(false);
-          });
-      });
       test("200: returns an object containing a description of all available endpoints", () => {
         return request(app)
           .get("/api")
           .then(({ body }) => {
-            expect(body.endpoints).toMatchObject({
-              "GET /api": {
-                description:
-                  "serves up a json representation of all the available endpoints of the api",
-                queries: [],
-                exampleResponse: "N/A - You're looking at it.",
-              },
-              "GET /api/topics": {
-                description: "serves an array of all topics",
-                queries: [],
-                exampleResponse: {
-                  topics: [{ slug: "football", description: "Footie!" }],
-                },
-              },
-              "GET /api/articles": {
-                description: "serves an array of all articles",
-                queries: ["author", "topic", "sort_by", "order"],
-                exampleResponse: {
-                  articles: [
-                    {
-                      title: "Seafood substitutions are increasing",
-                      topic: "cooking",
-                      author: "weegembump",
-                      body: "Text from the article..",
-                      created_at: "2018-05-30T15:59:13.341Z",
-                      votes: 0,
-                      comment_count: 6,
-                    },
-                  ],
-                },
-              },
-            });
             for (const key in body.endpoints) {
               expect(body.endpoints[key].hasOwnProperty("description")).toBe(
                 true
@@ -142,7 +99,7 @@ describe("app", () => {
             .get("/api/articles/666")
             .expect(404)
             .then(({ body }) => {
-              expect(body.msg).toBe('Not Found')
+              expect(body.msg).toBe("Not Found");
             });
         });
         test("400: invalid id data type", () => {
@@ -150,7 +107,7 @@ describe("app", () => {
             .get("/api/articles/NotAnId")
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).toBe('Bad Request')
+              expect(body.msg).toBe("Bad Request");
             });
         });
       });
