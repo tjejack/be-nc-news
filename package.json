@@ -31,7 +31,7 @@
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "fs.promises": "^0.1.2",
-    "pg": "^8.7.3",
+    "pg": "^8.11.3",
     "supertest": "^6.3.4"
   },
   "jest": {
