@@ -33,42 +33,48 @@ describe("app", () => {
           .then(({ body }) => {
             expect(body.endpoints).toMatchObject({
               "GET /api": {
-                "description": "serves up a json representation of all the available endpoints of the api"
+                description:
+                  "serves up a json representation of all the available endpoints of the api",
+                queries: [],
+                exampleResponse: "N/A - You're looking at it.",
               },
               "GET /api/topics": {
-                "description": "serves an array of all topics",
-                "queries": [],
-                "exampleResponse": {
-                  "topics": [{ "slug": "football", "description": "Footie!" }]
-                }
+                description: "serves an array of all topics",
+                queries: [],
+                exampleResponse: {
+                  topics: [{ slug: "football", description: "Footie!" }],
+                },
               },
               "GET /api/articles": {
-                "description": "serves an array of all articles",
-                "queries": ["author", "topic", "sort_by", "order"],
-                "exampleResponse": {
-                  "articles": [
+                description: "serves an array of all articles",
+                queries: ["author", "topic", "sort_by", "order"],
+                exampleResponse: {
+                  articles: [
                     {
-                      "title": "Seafood substitutions are increasing",
-                      "topic": "cooking",
-                      "author": "weegembump",
-                      "body": "Text from the article..",
-                      "created_at": "2018-05-30T15:59:13.341Z",
-                      "votes": 0,
-                      "comment_count": 6
-                    }
-                  ]
-                }
-              }
-            }
-            );
-            for(const key in body.endpoints){
-              expect(body.endpoints[key].hasOwnProperty('description')).toBe(true)
-              expect(body.endpoints[key].hasOwnProperty('queries')).toBe(true)
-              expect(body.endpoints[key].hasOwnProperty('exampleResponse')).toBe(true)
+                      title: "Seafood substitutions are increasing",
+                      topic: "cooking",
+                      author: "weegembump",
+                      body: "Text from the article..",
+                      created_at: "2018-05-30T15:59:13.341Z",
+                      votes: 0,
+                      comment_count: 6,
+                    },
+                  ],
+                },
+              },
+            });
+            for (const key in body.endpoints) {
+              expect(body.endpoints[key].hasOwnProperty("description")).toBe(
+                true
+              );
+              expect(body.endpoints[key].hasOwnProperty("queries")).toBe(true);
+              expect(
+                body.endpoints[key].hasOwnProperty("exampleResponse")
+              ).toBe(true);
             }
           });
       });
-    })
+    });
     describe("invalid endpoint", () => {
       test("status code 404", () => {
         return request(app).get("/api/nonsense").expect(404);
