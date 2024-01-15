@@ -14,12 +14,10 @@ beforeEach(() => {
 describe("app", () => {
   describe("/api", () => {
     describe("GET /api", () => {
-      test("status code 200", () => {
-        return request(app).get("/api").expect(200);
-      });
       test("200: returns an object containing an object", () => {
         return request(app)
           .get("/api")
+          .expect(200)
           .then(({ body }) => {
             expect(typeof body).toBe("object");
             expect(Array.isArray(body)).toBe(false);
@@ -76,24 +74,20 @@ describe("app", () => {
       });
     });
     describe("invalid endpoint", () => {
-      test("status code 404", () => {
-        return request(app).get("/api/nonsense").expect(404);
-      });
       test("404: returns message endpoint not found", () => {
         return request(app)
           .get("/api/nonsense")
+          .expect(404)
           .then(({ body }) => {
             expect(body.msg).toBe("Endpoint Not Found");
           });
       });
     });
     describe("GET /topics", () => {
-      test("status code 200", () => {
-        return request(app).get("/api/topics").expect(200);
-      });
       test("200: returns an object containing an array", () => {
         return request(app)
           .get("/api/topics")
+          .expect(200)
           .then(({ body }) => {
             expect(typeof body).toBe("object");
             expect(Array.isArray(body)).toBe(false);
@@ -104,6 +98,7 @@ describe("app", () => {
         return request(app)
           .get("/api/topics")
           .then(({ body }) => {
+            expect(body.topics.length).toBeGreaterThan(0);
             body.topics.forEach((topic) => {
               expect(topic.hasOwnProperty("slug")).toBe(true);
               expect(topic.hasOwnProperty("description")).toBe(true);
