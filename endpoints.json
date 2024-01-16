@@ -68,5 +68,19 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_Id/comments": {
+    "description": "posts a new comment, serves the new comment, requires body of {body: 'comment text', username: 'valid_user'}",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 5,
+        "body": "What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge.",
+        "votes": 16,
+        "author": "icellusedkars",
+        "article_id": 5,
+        "created_at": 1591682400000
+      }
+    }
   }
 }
