@@ -29,7 +29,7 @@
       ]
     }
   },
-  "GET /api/articles/:article_Id": {
+  "GET /api/articles/:article_id": {
     "description": "serves the article corresponding to the provided article_Id",
     "queries": [],
     "exampleResponse": {
@@ -45,7 +45,7 @@
       }
     }
   },
-  "GET /api/articles/:article_Id/comments": {
+  "GET /api/articles/:article_id/comments": {
     "description": "serves the comments corresponding to given article_id",
     "queries": [],
     "exampleResponse": {
@@ -69,7 +69,7 @@
       ]
     }
   },
-  "POST /api/articles/:article_Id/comments": {
+  "POST /api/articles/:article_id/comments": {
     "description": "posts a new comment, serves the new comment, requires body of {body: 'comment text', username: 'valid_user'}",
     "queries": [],
     "exampleResponse": {
