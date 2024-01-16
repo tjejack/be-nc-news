@@ -1,6 +1,5 @@
 const format = require("pg-format");
 const db = require("../db/connection.js");
-const comments = require("../db/data/test-data/comments.js");
 
 module.exports.fetchArticles = () => {
   return db
@@ -23,13 +22,13 @@ module.exports.fetchArticles = () => {
       return articles;
     })
     .catch((err) => {
-      return Promise.reject({ status: 500 });
+      return Promise.reject({ status: 500, msg: 'Something Went Wrong'});
     });
 };
 
 module.exports.fetchArticleByArticleId = (article_Id) => {
   if (isNaN(article_Id)) {
-    return Promise.reject({ status: 400 });
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
   }
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_Id])
@@ -37,6 +36,6 @@ module.exports.fetchArticleByArticleId = (article_Id) => {
       if (rows.length > 0) {
         return rows[0];
       }
-      return Promise.reject({ status: 404 });
+      return Promise.reject({ status: 404, msg: 'Article Not Found' });
     });
 };
