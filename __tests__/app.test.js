@@ -176,14 +176,14 @@ describe("app", () => {
           return request(app)
             .get("/api/articles/1/comments")
             .then(({ body }) => {
-              expect(body.comments.length).toBeGreaterThan(0);
+              expect(body.comments.length).toBe(11);
               body.comments.forEach((comment) => {
                 expect(comment.hasOwnProperty("comment_id")).toBe(true);
                 expect(comment.hasOwnProperty("votes")).toBe(true);
                 expect(comment.hasOwnProperty("created_at")).toBe(true);
                 expect(comment.hasOwnProperty("author")).toBe(true);
                 expect(comment.hasOwnProperty("body")).toBe(true);
-                expect(comment.hasOwnProperty("article_id")).toBe(true);
+                expect(comment.article_id).toBe(1);
               });
             });
         });
