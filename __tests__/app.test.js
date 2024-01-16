@@ -94,7 +94,7 @@ describe("app", () => {
             .get("/api/articles")
             .then(({ body }) => {
               body.articles.forEach((article) => {
-                expect(article.hasOwnProperty("comment_count")).toBe(true);
+                expect(typeof article.comment_count).toBe('number');
               });
             });
         });
