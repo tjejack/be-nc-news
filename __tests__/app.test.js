@@ -151,7 +151,7 @@ describe("app", () => {
             .get("/api/articles/666")
             .expect(404)
             .then(({ body }) => {
-              expect(body.msg).toBe("Not Found");
+              expect(body.msg).toBe("Article Not Found");
             });
         });
         test("400: invalid id data type", () => {
@@ -163,6 +163,63 @@ describe("app", () => {
             });
         });
       });
+      describe("GET /articles/:article_id/comments", () =>{
+        test("200: returns an object containing an array", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+              expect(Array.isArray(body.comments)).toBe(true);
+            });
+        });
+        test("200: returns the array of comments for the correct article with all standard comment properties", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .then(({ body }) => {
+              expect(body.comments.length).toBeGreaterThan(0);
+              body.comments.forEach((comment) => {
+                expect(comment.hasOwnProperty("comment_id")).toBe(true);
+                expect(comment.hasOwnProperty("votes")).toBe(true);
+                expect(comment.hasOwnProperty("created_at")).toBe(true);
+                expect(comment.hasOwnProperty("author")).toBe(true);
+                expect(comment.hasOwnProperty("body")).toBe(true);
+                expect(comment.hasOwnProperty("article_id")).toBe(true);
+              });
+            });
+        });
+        test("200: comments are sorted by date in descending order", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .then(({ body }) => {
+              expect(body.comments).toBeSortedBy("created_at", {
+                descending: true,
+              });
+            });
+        });
+        test("200: returns empty array when no comments for given article", () => {
+          return request(app)
+            .get("/api/articles/7/comments")
+            .then(({ body }) => {
+              expect(body.comments).toEqual([]);
+            });
+        });
+        test("400: returns error bad request when invalid article_id is passed", () => {
+          return request(app)
+            .get("/api/articles/notAnArticle/comments")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual('Bad Request');
+            });
+        });
+        test("404: returns not found when valid id number but no article exists", () => {
+          return request(app)
+            .get("/api/articles/25/comments")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual('Article Not Found');
+            });
+        });
+      })
     });
   });
 });
