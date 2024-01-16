@@ -4,18 +4,16 @@ const comments = require("../db/data/test-data/comments.js");
 
 module.exports.fetchArticles = () => {
   return db
-    .query(`SELECT * FROM articles ORDER BY created_at DESC`)
+    .query(`SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles ORDER BY created_at DESC`)
     .then(({ rows }) => {
       const articles = rows;
       const commentedArticles = articles.map((article) => {
         return db
-          .query(`SELECT * FROM comments WHERE comments.article_id = $1`, [
+          .query(`SELECT COUNT (*) FROM comments WHERE comments.article_id = $1`, [
             article.article_id,
           ])
           .then(({ rows }) => {
-            const comments = rows.length;
-            delete article.body;
-            article.comment_count = comments;
+            article.comment_count = rows[0].count;
             return article;
           });
       });
