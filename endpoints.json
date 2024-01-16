@@ -12,11 +12,12 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "serves an array of all articles sorted in descending order",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
+          "article_id": 12,
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
@@ -33,7 +34,7 @@
     "queries": [],
     "exampleResponse": {
       "article": {
-        "article_Id": 1,
+        "article_id": 1,
         "title": "Seafood substitutions are increasing",
         "topic": "cooking",
         "author": "weegembump",
