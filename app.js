@@ -6,13 +6,16 @@ const {
   getArticles,
   getArticleByArticleId,
 } = require("./controllers/articles-controllers.js");
-const { getArticleComments } = require("./controllers/comments-controllers.js");
+const { getArticleComments, postComment } = require("./controllers/comments-controllers.js");
+
+app.use(express.json())
 
 app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleByArticleId);
 app.get("/api/articles/:article_id/comments", getArticleComments)
+app.post("/api/articles/:article_id/comments", postComment)
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "Endpoint Not Found" });
