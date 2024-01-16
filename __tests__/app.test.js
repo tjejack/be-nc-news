@@ -163,7 +163,7 @@ describe("app", () => {
             });
         });
       });
-      describe("GET /articles/:article_id/comments", () =>{
+      describe("GET /articles/:article_id/comments", () => {
         test("200: returns an object containing an array", () => {
           return request(app)
             .get("/api/articles/1/comments")
@@ -208,7 +208,7 @@ describe("app", () => {
             .get("/api/articles/notAnArticle/comments")
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).toEqual('Bad Request');
+              expect(body.msg).toEqual("Bad Request");
             });
         });
         test("404: returns not found when valid id number but no article exists", () => {
@@ -216,10 +216,106 @@ describe("app", () => {
             .get("/api/articles/25/comments")
             .expect(404)
             .then(({ body }) => {
-              expect(body.msg).toEqual('Article Not Found');
+              expect(body.msg).toEqual("Article Not Found");
             });
         });
-      })
+      });
+      describe("POST /articles/:article_id/comments", () => {
+        test("201: returns an object", () => {
+          const newComment = {
+            body: "Wow! So cool!",
+            username: "icellusedkars",
+          };
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(201)
+            .then(({ body }) => {
+              expect(typeof body.comment).toBe("object");
+              expect(Array.isArray(body.comment)).toBe(false);
+            });
+        });
+        test("201: creates a new comment and responds with the new comment", () => {
+          const newComment = {
+            body: "Wow! So cool!",
+            username: "icellusedkars",
+          };
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.comment.hasOwnProperty("comment_id")).toBe(true);
+              expect(body.comment.body).toBe("Wow! So cool!");
+              expect(body.comment.votes).toBe(0);
+              expect(body.comment.author).toBe("icellusedkars");
+              expect(body.comment.article_id).toBe(1);
+              expect(body.comment.hasOwnProperty("created_at")).toBe(true);
+            });
+        });
+        test("400: returns error bad request when invalid article_id is passed", () => {
+          const newComment = {
+            body: "Wow! So cool!",
+            username: "icellusedkars",
+          };
+          return request(app)
+            .post("/api/articles/Potato/comments")
+            .send(newComment)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request");
+            });
+        });
+        test("404: returns not found when valid id number but no article exists", () => {
+          const newComment = {
+            body: "Wow! So cool!",
+            username: "icellusedkars",
+          };
+          return request(app)
+            .post("/api/articles/5468435/comments")
+            .send(newComment)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Article Not Found");
+            });
+        });
+        test("400: returns bad request when missing information", () => {
+          const newComment = {
+            body: "Wow! So cool!",
+          };
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - Missing Properties");
+            });
+        });
+        test("400: returns bad request when comment properties are incorrect data type", () => {
+          const newComment = {
+            body: "Wow! So cool!",
+            username: 548613
+          };
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - Missing Properties");
+            });
+        });
+        test("400: returns bad request when comment username does not exist", () => {
+          const newComment = {
+            body: "Wow! So cool!",
+            username: "my_name_jeff"
+          };
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send(newComment)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - No Such User");
+            });
+        });
+      });
     });
   });
 });
