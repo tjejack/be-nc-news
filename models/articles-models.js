@@ -28,7 +28,7 @@ module.exports.fetchArticles = () => {
             [article.article_id]
           )
           .then(({ rows }) => {
-            article.comment_count = rows[0].count;
+            article.comment_count = Number(rows[0].count);
             return article;
           });
       });
