@@ -1,6 +1,8 @@
 const {
   fetchArticleComments,
   addComment,
+  removeComment,
+  checkCommentExists,
 } = require("../models/comments-models.js");
 const { checkArticleExists } = require("../models/articles-models.js");
 const { checkUserExists } = require("../models/users-models.js");
@@ -25,8 +27,8 @@ module.exports.postComment = (req, res, next) => {
   ) {
     next({ status: 400, msg: "Bad Request - Missing Properties" });
   }
-  const articleExists = checkArticleExists(req.params.article_id)
-  const userExists = checkUserExists(req.body.username)
+  const articleExists = checkArticleExists(req.params.article_id);
+  const userExists = checkUserExists(req.body.username);
   Promise.all([articleExists, userExists])
     .then(() => {
       return addComment(
@@ -37,6 +39,19 @@ module.exports.postComment = (req, res, next) => {
     })
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+module.exports.deleteComment = (req, res, next) => {
+  checkCommentExists(req.params.comment_id)
+    .then(() => {
+      removeComment(req.params.comment_id);
+    })
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);

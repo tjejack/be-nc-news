@@ -393,6 +393,28 @@ describe("app", () => {
         });
       });
     });
+    describe("/comments", () => {
+      describe("DELETE /comments/:comment_id", () => {
+        test("204: comment deleted", () => {
+          return request(app)
+            .delete("/api/comments/1")
+            .expect(204)
+        })
+        test("404: comment id valid but does not exist", () => {
+          return request(app)
+            .delete("/api/comments/65468465")
+            .expect(404).then(({body})=>{
+              expect(body.msg).toEqual('Comment Not Found')
+            })
+        })
+        test("400: comment id invalid", () => {
+          return request(app)
+            .delete("/api/comments/thisisnotacomment")
+            .expect(400).then(({body})=>{
+              expect(body.msg).toEqual('Bad Request')
+            })
+        })
+      });
     describe("/users", () => {
       describe("GET /api/users", () => {
         test("200: returns an array of users", () => {
@@ -409,6 +431,8 @@ describe("app", () => {
             });
         });
       });
+    });
+    
     });
   });
 });

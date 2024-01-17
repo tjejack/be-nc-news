@@ -104,7 +104,13 @@
       }
     }
   },
-  "GET /api/users": {
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the given comment",
+    "queries": [],
+    "body": "N/A",
+    "exampleResponse": "N/A - no body only status code 204"
+  },
+   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
     "body": "N/A",
@@ -117,5 +123,4 @@
         }
       ]
     }
-  }
 }
