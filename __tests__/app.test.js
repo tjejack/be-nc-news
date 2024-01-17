@@ -33,6 +33,8 @@ describe("app", () => {
                 true
               );
               expect(body.endpoints[key].hasOwnProperty("queries")).toBe(true);
+
+              expect(body.endpoints[key].hasOwnProperty("body")).toBe(true);
               expect(
                 body.endpoints[key].hasOwnProperty("exampleResponse")
               ).toBe(true);
@@ -94,7 +96,7 @@ describe("app", () => {
             .get("/api/articles")
             .then(({ body }) => {
               body.articles.forEach((article) => {
-                expect(typeof article.comment_count).toBe('number');
+                expect(typeof article.comment_count).toBe("number");
               });
             });
         });
@@ -138,12 +140,12 @@ describe("app", () => {
                 topic: "mitch",
                 author: "butter_bridge",
                 body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z", 
                 votes: 100,
                 article_img_url:
                   "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
               };
-              expect(body.article).toMatchObject(expectedOutput);
-              expect(body.article.hasOwnProperty("created_at")).toBe(true);
+              expect(body.article).toEqual(expectedOutput);
             });
         });
         test("404: valid id number but no matching article", () => {
@@ -292,7 +294,7 @@ describe("app", () => {
         test("400: returns bad request when comment properties are incorrect data type", () => {
           const newComment = {
             body: "Wow! So cool!",
-            username: 548613
+            username: 548613,
           };
           return request(app)
             .post("/api/articles/1/comments")
@@ -305,7 +307,7 @@ describe("app", () => {
         test("400: returns bad request when comment username does not exist", () => {
           const newComment = {
             body: "Wow! So cool!",
-            username: "my_name_jeff"
+            username: "my_name_jeff",
           };
           return request(app)
             .post("/api/articles/1/comments")
@@ -313,6 +315,82 @@ describe("app", () => {
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).toEqual("Bad Request - No Such User");
+            });
+        });
+      });
+      describe("PATCH /articles/:article_id", () => {
+        test("200: returns the article with updated votes value", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({inc_votes: 1})
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.article).toEqual({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 101,
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              })
+            });
+        });
+        test("200: returns the article with updated votes value when votes are negative", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({inc_votes: -10})
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.article).toEqual({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 90,
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              })
+            });
+        });
+        test("404: article valid id but does not exist", () => {
+          return request(app)
+            .patch("/api/articles/1001")
+            .send({inc_votes: -10})
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual('Article Not Found')
+            });
+        });
+        test("400: article invalid id", () => {
+          return request(app)
+            .patch("/api/articles/DROP TABLE users")
+            .send({inc_votes: -10})
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual('Bad Request')
+            });
+        });
+        test("400: no inc_votes passed", () => {
+          return request(app)
+            .patch("/api/articles/DROP TABLE users")
+            .send({updatedVotes: -10})
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual('Bad Request')
+            });
+        });
+        test("400: inc_votes invalid data type", () => {
+          return request(app)
+            .patch("/api/articles/DROP TABLE users")
+            .send({inc_votes: 'add ten to votes'})
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual('Bad Request')
             });
         });
       });
