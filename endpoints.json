@@ -2,11 +2,13 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api",
     "queries": [],
+    "body": "N/A",
     "exampleResponse": "N/A - You're looking at it."
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
     "queries": [],
+    "body": "N/A",
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
@@ -14,6 +16,7 @@
   "GET /api/articles": {
     "description": "serves an array of all articles sorted in descending order",
     "queries": ["author", "topic", "sort_by", "order"],
+    "body": "N/A",
     "exampleResponse": {
       "articles": [
         {
@@ -32,6 +35,7 @@
   "GET /api/articles/:article_id": {
     "description": "serves the article corresponding to the provided article_Id",
     "queries": [],
+    "body": "N/A",
     "exampleResponse": {
       "article": {
         "article_id": 1,
@@ -48,6 +52,7 @@
   "GET /api/articles/:article_id/comments": {
     "description": "serves the comments corresponding to given article_id",
     "queries": [],
+    "body": "N/A",
     "exampleResponse": {
       "comments": [
         {
@@ -70,8 +75,24 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "posts a new comment, serves the new comment, requires body of {body: 'comment text', username: 'valid_user'}",
+    "description": "posts a new comment, serves the new comment, requires body of ",
     "queries": [],
+    "body": { "body": "comment text", "username": "valid_user" },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 5,
+        "body": "What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge.",
+        "votes": 16,
+        "author": "icellusedkars",
+        "article_id": 5,
+        "created_at": 1591682400000
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "increases the number of votes on a specified article by the given number, serves the updated article",
+    "queries": [],
+    "body": { "inc_votes": 1 },
     "exampleResponse": {
       "comment": {
         "comment_id": 5,
