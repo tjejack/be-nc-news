@@ -118,6 +118,29 @@ describe("app", () => {
               });
             });
         });
+
+        test("200: returns articles of a given topic", () => {
+          return request(app)
+            .get("/api/articles?topic=cats")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(1);
+              expect(body.articles[0]).toMatchObject({
+                title: "UNCOVERED: catspiracy to bring down democracy",
+                topic: "cats",
+                author: "rogersop",
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
+            });
+        });
+        test("400: invalid query", () => {
+          return request(app)
+            .get("/api/articles?topic=magic")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Invalid Query");
+            });
+        });
       });
       describe("GET /api/articles/:article_Id", () => {
         test("200: returns an object with key 'article' containing an object", () => {
