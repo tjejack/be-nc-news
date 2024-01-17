@@ -42,29 +42,31 @@ describe("app", () => {
           });
       });
     });
-    describe("GET /topics", () => {
-      test("200: returns an object containing an array", () => {
-        return request(app)
-          .get("/api/topics")
-          .expect(200)
-          .then(({ body }) => {
-            expect(Array.isArray(body.topics)).toBe(true);
-          });
-      });
-      test("200: returns the array of topics, each with slug and description properties", () => {
-        return request(app)
-          .get("/api/topics")
-          .then(({ body }) => {
-            expect(body.topics.length).toBeGreaterThan(0);
-            body.topics.forEach((topic) => {
-              expect(topic.hasOwnProperty("slug")).toBe(true);
-              expect(topic.hasOwnProperty("description")).toBe(true);
+    describe("/topics", () => {
+      describe("GET /api/topics", () => {
+        test("200: returns an object containing an array", () => {
+          return request(app)
+            .get("/api/topics")
+            .expect(200)
+            .then(({ body }) => {
+              expect(Array.isArray(body.topics)).toBe(true);
             });
-          });
+        });
+        test("200: returns the array of topics, each with slug and description properties", () => {
+          return request(app)
+            .get("/api/topics")
+            .then(({ body }) => {
+              expect(body.topics.length).toEqual(3);
+              body.topics.forEach((topic) => {
+                expect(topic.hasOwnProperty("slug")).toBe(true);
+                expect(topic.hasOwnProperty("description")).toBe(true);
+              });
+            });
+        });
       });
     });
     describe("/articles", () => {
-      describe("GET /articles", () => {
+      describe("GET /api/articles", () => {
         test("200: returns an object containing an array", () => {
           return request(app)
             .get("/api/articles")
@@ -77,7 +79,7 @@ describe("app", () => {
           return request(app)
             .get("/api/articles")
             .then(({ body }) => {
-              expect(body.articles.length).toBeGreaterThan(0);
+              expect(body.articles.length).toEqual(13);
               body.articles.forEach((article) => {
                 expect(article.hasOwnProperty("author")).toBe(true);
                 expect(article.hasOwnProperty("title")).toBe(true);
@@ -117,13 +119,12 @@ describe("app", () => {
             });
         });
       });
-      describe("GET /articles/:article_Id", () => {
+      describe("GET /api/articles/:article_Id", () => {
         test("200: returns an object with key 'article' containing an object", () => {
           return request(app)
             .get("/api/articles/1")
             .expect(200)
             .then(({ body }) => {
-              expect(typeof body).toBe("object");
               expect(typeof body.article).toBe("object");
               expect(Array.isArray(body.article)).toBe(false);
             });
@@ -163,7 +164,7 @@ describe("app", () => {
             });
         });
       });
-      describe("GET /articles/:article_id/comments", () => {
+      describe("GET /api/articles/:article_id/comments", () => {
         test("200: returns an object containing an array", () => {
           return request(app)
             .get("/api/articles/1/comments")
@@ -220,8 +221,8 @@ describe("app", () => {
             });
         });
       });
-      describe("POST /articles/:article_id/comments", () => {
-        test("201: returns an object", () => {
+      describe("POST /api/articles/:article_id/comments", () => {
+        test("201: returns an object containing comment object", () => {
           const newComment = {
             body: "Wow! So cool!",
             username: "icellusedkars",
@@ -261,6 +262,7 @@ describe("app", () => {
           return request(app)
             .post("/api/articles/Potato/comments")
             .send(newComment)
+            .expect(400)
             .then(({ body }) => {
               expect(body.msg).toEqual("Bad Request");
             });
@@ -273,6 +275,7 @@ describe("app", () => {
           return request(app)
             .post("/api/articles/5468435/comments")
             .send(newComment)
+            .expect(404)
             .then(({ body }) => {
               expect(body.msg).toEqual("Article Not Found");
             });
@@ -316,7 +319,7 @@ describe("app", () => {
             });
         });
       });
-      describe("PATCH /articles/:article_id", () => {
+      describe("PATCH /api/articles/:article_id", () => {
         test("200: returns the article with updated votes value", () => {
           return request(app)
             .patch("/api/articles/1")
@@ -355,6 +358,25 @@ describe("app", () => {
               });
             });
         });
+        test("200: no inc_votes passed, returns article unchanged", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ updatedVotes: 10 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.article).toEqual({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 100,
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
+            });
+        });
         test("404: article valid id but does not exist", () => {
           return request(app)
             .patch("/api/articles/1001")
@@ -375,25 +397,6 @@ describe("app", () => {
               expect(body.msg).toEqual("Bad Request");
             });
         });
-        test("200: no inc_votes passed, returns article unchanged", () => {
-          return request(app)
-            .patch("/api/articles/1")
-            .send({ updatedVotes: 10 })
-            .expect(200)
-            .then(({ body }) => {
-              expect(body.article).toEqual({
-                article_id: 1,
-                title: "Living in the shadow of a great man",
-                topic: "mitch",
-                author: "butter_bridge",
-                body: "I find this existence challenging",
-                created_at: "2020-07-09T20:11:00.000Z",
-                votes: 100,
-                article_img_url:
-                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              });
-            });
-        });
         test("400: inc_votes invalid data type", () => {
           return request(app)
             .patch("/api/articles/1")
@@ -406,7 +409,7 @@ describe("app", () => {
       });
     });
     describe("/comments", () => {
-      describe("DELETE /comments/:comment_id", () => {
+      describe("DELETE /api/comments/:comment_id", () => {
         test("204: comment deleted", () => {
           return request(app).delete("/api/comments/1").expect(204);
         });
