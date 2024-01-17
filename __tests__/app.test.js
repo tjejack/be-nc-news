@@ -48,8 +48,6 @@ describe("app", () => {
           .get("/api/topics")
           .expect(200)
           .then(({ body }) => {
-            expect(typeof body).toBe("object");
-            expect(Array.isArray(body)).toBe(false);
             expect(Array.isArray(body.topics)).toBe(true);
           });
       });
@@ -140,7 +138,7 @@ describe("app", () => {
                 topic: "mitch",
                 author: "butter_bridge",
                 body: "I find this existence challenging",
-                created_at: "2020-07-09T20:11:00.000Z", 
+                created_at: "2020-07-09T20:11:00.000Z",
                 votes: 100,
                 article_img_url:
                   "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
@@ -322,7 +320,7 @@ describe("app", () => {
         test("200: returns the article with updated votes value", () => {
           return request(app)
             .patch("/api/articles/1")
-            .send({inc_votes: 1})
+            .send({ inc_votes: 1 })
             .expect(200)
             .then(({ body }) => {
               expect(body.article).toEqual({
@@ -335,13 +333,13 @@ describe("app", () => {
                 votes: 101,
                 article_img_url:
                   "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              })
+              });
             });
         });
         test("200: returns the article with updated votes value when votes are negative", () => {
           return request(app)
             .patch("/api/articles/1")
-            .send({inc_votes: -10})
+            .send({ inc_votes: -10 })
             .expect(200)
             .then(({ body }) => {
               expect(body.article).toEqual({
@@ -354,43 +352,60 @@ describe("app", () => {
                 votes: 90,
                 article_img_url:
                   "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              })
+              });
             });
         });
         test("404: article valid id but does not exist", () => {
           return request(app)
             .patch("/api/articles/1001")
-            .send({inc_votes: -10})
+            .send({ inc_votes: -10 })
             .expect(404)
             .then(({ body }) => {
-              expect(body.msg).toEqual('Article Not Found')
+              expect(body.msg).toEqual("Article Not Found");
             });
         });
         test("400: article invalid id", () => {
           return request(app)
             .patch("/api/articles/DROP TABLE users")
-            .send({inc_votes: -10})
+            .send({ inc_votes: -10 })
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).toEqual('Bad Request')
+              expect(body.msg).toEqual("Bad Request");
             });
         });
         test("400: no inc_votes passed", () => {
           return request(app)
             .patch("/api/articles/DROP TABLE users")
-            .send({updatedVotes: -10})
+            .send({ updatedVotes: -10 })
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).toEqual('Bad Request')
+              expect(body.msg).toEqual("Bad Request");
             });
         });
         test("400: inc_votes invalid data type", () => {
           return request(app)
             .patch("/api/articles/DROP TABLE users")
-            .send({inc_votes: 'add ten to votes'})
+            .send({ inc_votes: "add ten to votes" })
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).toEqual('Bad Request')
+              expect(body.msg).toEqual("Bad Request");
+            });
+        });
+      });
+    });
+    describe("/users", () => {
+      describe("GET /api/users", () => {
+        test("200: returns an array of users", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.users.length).toBeGreaterThan(0);
+              body.users.forEach((user) => {
+                expect(user.hasOwnProperty("username")).toBe(true);
+                expect(user.hasOwnProperty("name")).toBe(true);
+                expect(user.hasOwnProperty("avatar_url")).toBe(true);
+              });
             });
         });
       });
