@@ -48,8 +48,6 @@ describe("app", () => {
           .get("/api/topics")
           .expect(200)
           .then(({ body }) => {
-            expect(typeof body).toBe("object");
-            expect(Array.isArray(body)).toBe(false);
             expect(Array.isArray(body.topics)).toBe(true);
           });
       });
@@ -417,6 +415,24 @@ describe("app", () => {
             })
         })
       });
+    describe("/users", () => {
+      describe("GET /api/users", () => {
+        test("200: returns an array of users", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.users.length).toBeGreaterThan(0);
+              body.users.forEach((user) => {
+                expect(user.hasOwnProperty("username")).toBe(true);
+                expect(user.hasOwnProperty("name")).toBe(true);
+                expect(user.hasOwnProperty("avatar_url")).toBe(true);
+              });
+            });
+        });
+      });
+    });
+    
     });
   });
 });
