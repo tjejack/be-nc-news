@@ -358,7 +358,7 @@ describe("app", () => {
         test("404: article valid id but does not exist", () => {
           return request(app)
             .patch("/api/articles/1001")
-            .send({ inc_votes: -10 })
+            .send({ inc_votes: 10 })
             .expect(404)
             .then(({ body }) => {
               expect(body.msg).toEqual("Article Not Found");
@@ -366,25 +366,35 @@ describe("app", () => {
         });
         test("400: article invalid id", () => {
           return request(app)
-            .patch("/api/articles/DROP TABLE users")
+            .patch("/api/articles/1; DROP TABLE articles; SELECT * FROM articles ")
             .send({ inc_votes: -10 })
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).toEqual("Bad Request");
             });
         });
-        test("400: no inc_votes passed", () => {
+        test("200: no inc_votes passed, returns article unchanged", () => {
           return request(app)
-            .patch("/api/articles/DROP TABLE users")
-            .send({ updatedVotes: -10 })
-            .expect(400)
+            .patch("/api/articles/1")
+            .send({ updatedVotes: 10 })
+            .expect(200)
             .then(({ body }) => {
-              expect(body.msg).toEqual("Bad Request");
+              expect(body.article).toEqual({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes:100,
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
             });
         });
         test("400: inc_votes invalid data type", () => {
           return request(app)
-            .patch("/api/articles/DROP TABLE users")
+            .patch("/api/articles/1")
             .send({ inc_votes: "add ten to votes" })
             .expect(400)
             .then(({ body }) => {
@@ -396,43 +406,42 @@ describe("app", () => {
     describe("/comments", () => {
       describe("DELETE /comments/:comment_id", () => {
         test("204: comment deleted", () => {
-          return request(app)
-            .delete("/api/comments/1")
-            .expect(204)
-        })
+          return request(app).delete("/api/comments/1").expect(204);
+        });
         test("404: comment id valid but does not exist", () => {
           return request(app)
             .delete("/api/comments/65468465")
-            .expect(404).then(({body})=>{
-              expect(body.msg).toEqual('Comment Not Found')
-            })
-        })
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Comment Not Found");
+            });
+        });
         test("400: comment id invalid", () => {
           return request(app)
             .delete("/api/comments/thisisnotacomment")
-            .expect(400).then(({body})=>{
-              expect(body.msg).toEqual('Bad Request')
-            })
-        })
-      });
-    describe("/users", () => {
-      describe("GET /api/users", () => {
-        test("200: returns an array of users", () => {
-          return request(app)
-            .get("/api/users")
-            .expect(200)
+            .expect(400)
             .then(({ body }) => {
-              expect(body.users.length).toBeGreaterThan(0);
-              body.users.forEach((user) => {
-                expect(user.hasOwnProperty("username")).toBe(true);
-                expect(user.hasOwnProperty("name")).toBe(true);
-                expect(user.hasOwnProperty("avatar_url")).toBe(true);
-              });
+              expect(body.msg).toEqual("Bad Request");
             });
         });
       });
-    });
-    
+      describe("/users", () => {
+        describe("GET /api/users", () => {
+          test("200: returns an array of users", () => {
+            return request(app)
+              .get("/api/users")
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.users.length).toBeGreaterThan(0);
+                body.users.forEach((user) => {
+                  expect(user.hasOwnProperty("username")).toBe(true);
+                  expect(user.hasOwnProperty("name")).toBe(true);
+                  expect(user.hasOwnProperty("avatar_url")).toBe(true);
+                });
+              });
+          });
+        });
+      });
     });
   });
 });
