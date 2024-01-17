@@ -2,7 +2,6 @@ const {
   fetchArticleComments,
   addComment,
   removeComment,
-  checkCommentExists,
 } = require("../models/comments-models.js");
 const { checkArticleExists } = require("../models/articles-models.js");
 const { checkUserExists } = require("../models/users-models.js");
@@ -46,10 +45,7 @@ module.exports.postComment = (req, res, next) => {
 };
 
 module.exports.deleteComment = (req, res, next) => {
-  checkCommentExists(req.params.comment_id)
-    .then(() => {
-      removeComment(req.params.comment_id);
-    })
+  removeComment(req.params.comment_id)
     .then(() => {
       res.status(204).send();
     })
