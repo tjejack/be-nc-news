@@ -366,7 +366,9 @@ describe("app", () => {
         });
         test("400: article invalid id", () => {
           return request(app)
-            .patch("/api/articles/1; DROP TABLE articles; SELECT * FROM articles ")
+            .patch(
+              "/api/articles/1; DROP TABLE articles; SELECT * FROM articles "
+            )
             .send({ inc_votes: -10 })
             .expect(400)
             .then(({ body }) => {
@@ -386,7 +388,7 @@ describe("app", () => {
                 author: "butter_bridge",
                 body: "I find this existence challenging",
                 created_at: "2020-07-09T20:11:00.000Z",
-                votes:100,
+                votes: 100,
                 article_img_url:
                   "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
               });
@@ -425,21 +427,21 @@ describe("app", () => {
             });
         });
       });
-      describe("/users", () => {
-        describe("GET /api/users", () => {
-          test("200: returns an array of users", () => {
-            return request(app)
-              .get("/api/users")
-              .expect(200)
-              .then(({ body }) => {
-                expect(body.users.length).toBeGreaterThan(0);
-                body.users.forEach((user) => {
-                  expect(user.hasOwnProperty("username")).toBe(true);
-                  expect(user.hasOwnProperty("name")).toBe(true);
-                  expect(user.hasOwnProperty("avatar_url")).toBe(true);
-                });
+    });
+    describe("/users", () => {
+      describe("GET /api/users", () => {
+        test("200: returns an array of users", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.users.length).toEqual(4);
+              body.users.forEach((user) => {
+                expect(user.hasOwnProperty("username")).toBe(true);
+                expect(user.hasOwnProperty("name")).toBe(true);
+                expect(user.hasOwnProperty("avatar_url")).toBe(true);
               });
-          });
+            });
         });
       });
     });
