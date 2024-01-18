@@ -167,7 +167,7 @@ describe("app", () => {
                 article_img_url:
                   "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
               };
-              expect(body.article).toEqual(expectedOutput);
+              expect(body.article).toMatchObject(expectedOutput);
             });
         });
         test("404: valid id number but no matching article", () => {
@@ -184,6 +184,20 @@ describe("app", () => {
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).toBe("Bad Request");
+            });
+        });
+        test("200: returned object should also have a comment_count property", () => {
+          return request(app)
+            .get("/api/articles/1")
+            .then(({ body }) => {
+              expect(body.article.comment_count).toEqual(11)
+            });
+        });
+        test("200: returns comment_count 0 when no comments for given article", () => {
+          return request(app)
+            .get("/api/articles/2")
+            .then(({ body }) => {
+              expect(body.article.comment_count).toEqual(0)
             });
         });
       });
