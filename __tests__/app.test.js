@@ -118,27 +118,35 @@ describe("app", () => {
               });
             });
         });
-
         test("200: returns articles of a given topic", () => {
           return request(app)
-            .get("/api/articles?topic=cats")
+            .get("/api/articles?topic=mitch")
             .then(({ body }) => {
-              expect(body.articles.length).toEqual(1);
-              expect(body.articles[0]).toMatchObject({
-                title: "UNCOVERED: catspiracy to bring down democracy",
-                topic: "cats",
-                author: "rogersop",
-                article_img_url:
-                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              });
+              expect(body.articles.length).toEqual(12);
+              body.articles.forEach((article)=>{
+                expect(article.hasOwnProperty('title')).toEqual(true)
+                expect(article.topic).toEqual('mitch')
+                expect(article.hasOwnProperty('author')).toEqual(true)
+                expect(article.hasOwnProperty('created_at')).toEqual(true)
+                expect(article.hasOwnProperty('votes')).toEqual(true)
+                expect(article.hasOwnProperty('article_img_url')).toEqual(true)
+                expect(article.hasOwnProperty('article_id')).toEqual(true)
+              })
             });
         });
-        test("400: invalid query", () => {
+        test("200: returns empty array when valid topic but no articles", () => {
+          return request(app)
+            .get("/api/articles?topic=paper")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(0);
+            });
+        });
+        test("404: invalid query", () => {
           return request(app)
             .get("/api/articles?topic=magic")
-            .expect(400)
+            .expect(404)
             .then(({ body }) => {
-              expect(body.msg).toEqual("Invalid Query");
+              expect(body.msg).toEqual("Not Found");
             });
         });
       });

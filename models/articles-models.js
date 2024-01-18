@@ -17,7 +17,7 @@ module.exports.fetchArticles = (topic) => {
   const validTopics = [undefined, "cats", "mitch", "paper"];
 
   if (!validTopics.includes(topic)) {
-    return Promise.reject({ status: 400, msg: "Invalid Query" });
+    return Promise.reject({ status: 404, msg: "Not Found" });
   }
   let sqlQuery = `SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles`;
 
