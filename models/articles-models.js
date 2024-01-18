@@ -15,9 +15,9 @@ module.exports.checkArticleExists = (article_id) => {
 };
 
 module.exports.fetchArticles = (topic) => {
-  const validTopics = [undefined, 'cats', 'mitch', 'paper']
-  
-  if(!validTopics.includes(topic)){
+  const validTopics = [undefined, "cats", "mitch", "paper"];
+
+  if (!validTopics.includes(topic)) {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
   }
   let sqlQuery = `SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles`;
@@ -57,14 +57,23 @@ module.exports.fetchArticleByArticleId = (article_Id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_Id])
     .then(({ rows }) => {
-      if (rows.length > 0) {
-        return rows[0];
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
       }
-      return Promise.reject({ status: 404, msg: "Article Not Found" });
+      const article = rows[0];
+      return db
+        .query(
+          `SELECT COUNT (*) FROM comments WHERE comments.article_id = $1`,
+          [article_Id]
+        )
+        .then(({ rows }) => {
+          article.comment_count = Number(rows[0].count);
+          return article;
+        });
     });
 };
 
-module.exports.updateArticle = (article_id, inc_votes=0) => {
+module.exports.updateArticle = (article_id, inc_votes = 0) => {
   return db
     .query(
       `UPDATE articles SET votes = votes+$1 WHERE article_id = $2 RETURNING *`,
