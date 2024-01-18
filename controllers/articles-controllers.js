@@ -7,8 +7,9 @@ const {
 const { fetchTopics } = require("../models/topics-models.js");
 
 module.exports.getArticles = (req, res, next) => {
-  fetchTopics().then((validTopics) => {
-    fetchArticles(req.query.topic, validTopics)
+  fetchTopics()
+  .then((validTopics) => {
+    fetchArticles(req.query, validTopics)
       .then((articles) => {
         res.status(200).send({ articles });
       })

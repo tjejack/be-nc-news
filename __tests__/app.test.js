@@ -123,15 +123,15 @@ describe("app", () => {
             .get("/api/articles?topic=mitch")
             .then(({ body }) => {
               expect(body.articles.length).toEqual(12);
-              body.articles.forEach((article)=>{
-                expect(article.hasOwnProperty('title')).toEqual(true)
-                expect(article.topic).toEqual('mitch')
-                expect(article.hasOwnProperty('author')).toEqual(true)
-                expect(article.hasOwnProperty('created_at')).toEqual(true)
-                expect(article.hasOwnProperty('votes')).toEqual(true)
-                expect(article.hasOwnProperty('article_img_url')).toEqual(true)
-                expect(article.hasOwnProperty('article_id')).toEqual(true)
-              })
+              body.articles.forEach((article) => {
+                expect(article.hasOwnProperty("title")).toEqual(true);
+                expect(article.topic).toEqual("mitch");
+                expect(article.hasOwnProperty("author")).toEqual(true);
+                expect(article.hasOwnProperty("created_at")).toEqual(true);
+                expect(article.hasOwnProperty("votes")).toEqual(true);
+                expect(article.hasOwnProperty("article_img_url")).toEqual(true);
+                expect(article.hasOwnProperty("article_id")).toEqual(true);
+              });
             });
         });
         test("200: returns empty array when valid topic but no articles", () => {
@@ -141,12 +141,60 @@ describe("app", () => {
               expect(body.articles.length).toEqual(0);
             });
         });
-        test("404: invalid query", () => {
+        test("404: non-existent topic", () => {
           return request(app)
             .get("/api/articles?topic=magic")
             .expect(404)
             .then(({ body }) => {
               expect(body.msg).toEqual("Not Found");
+            });
+        });
+        test("200: returns articles sorted by any given column", () => {
+          return request(app)
+            .get("/api/articles?sort_by=votes")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(13);
+              expect(body.articles).toBeSortedBy("votes", { descending: true });
+            });
+        });
+        test("404: no such column", () => {
+          return request(app)
+            .get("/api/articles?sort_by=fakeColumn")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Not Found");
+            });
+        });
+        test("200: returns articles sorted in any given order", () => {
+          return request(app)
+            .get("/api/articles?order=ASC")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(13);
+              expect(body.articles).toBeSortedBy("created_at");
+            });
+        });
+        test("404: no such order", () => {
+          return request(app)
+            .get("/api/articles?order=54684652")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Not Found");
+            });
+        });
+        test("400: invalid query", () => {
+          return request(app)
+            .get("/api/articles?notAQuery=bad")
+            // .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request");
+            });
+        });
+        test("200: takes multiple queries at one time", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch&sort_by=title&order=ASC")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(12);
+              expect(body.articles).toBeSortedBy("title");
             });
         });
       });
@@ -198,14 +246,14 @@ describe("app", () => {
           return request(app)
             .get("/api/articles/1")
             .then(({ body }) => {
-              expect(body.article.comment_count).toEqual(11)
+              expect(body.article.comment_count).toEqual(11);
             });
         });
         test("200: returns comment_count 0 when no comments for given article", () => {
           return request(app)
             .get("/api/articles/2")
             .then(({ body }) => {
-              expect(body.article.comment_count).toEqual(0)
+              expect(body.article.comment_count).toEqual(0);
             });
         });
       });

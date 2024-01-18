@@ -13,16 +13,15 @@ module.exports.checkArticleExists = (article_id) => {
     });
 };
 
-module.exports.fetchArticles = (queryTopic, validTopics) => {
-  const validTopicsArr = [undefined];
-  
-  validTopics.forEach((topic) => {
-    validTopicsArr.push(topic.slug)
-  })
-
-  if (!validTopicsArr.includes(queryTopic)) {
-    return Promise.reject({ status: 404, msg: "Not Found" });
+module.exports.fetchArticles = (queries, validTopics) => {
+  const validQueries = ["topic", "sort_by", "order"];
+  const queriesPassed = Object.keys(queries);
+  for (let i = 0; i < queriesPassed.length; i++) {
+    if (!validQueries.includes(queriesPassed[i])) {
+      return Promise.reject({ status: 400, msg: "Bad Request" });
+    }
   }
+
   let sqlQuery = `
   SELECT 
   articles.article_id, 
@@ -40,12 +39,46 @@ module.exports.fetchArticles = (queryTopic, validTopics) => {
   articles.article_id=comments.article_id`;
 
   const sqlParams = [];
-  if (queryTopic) {
+
+  if (queries.topic) {
+    const validTopicsArr = [];
+    validTopics.forEach((topic) => {
+      validTopicsArr.push(topic.slug);
+    });
+    if (!validTopicsArr.includes(queries.topic)) {
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    }
     sqlQuery += ` WHERE topic = $1`;
-    sqlParams.push(queryTopic);
+    sqlParams.push(queries.topic);
   }
 
-  sqlQuery += ` GROUP BY articles.article_id ORDER BY created_at DESC`;
+  sqlQuery += ` GROUP BY articles.article_id`;
+  let orderQuery = "created_at";
+  if (queries.sort_by) {
+    const validSortQueries = [
+      "article_id",
+      "title",
+      "topic",
+      "author",
+      "created_at",
+      "votes",
+      "article_image_url",
+    ];
+    if (!validSortQueries.includes(queries.sort_by)) {
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    }
+    orderQuery = queries.sort_by;
+  }
+  let orderOption = "DESC";
+  if (queries.order) {
+    const validOrderQueries = ["ASC", "DESC"];
+    const allCapsOrder = queries.order.toUpperCase();
+    if (!validOrderQueries.includes(allCapsOrder)) {
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    }
+    orderOption = allCapsOrder;
+  }
+  sqlQuery += ` ORDER BY ${orderQuery} ${orderOption}`;
   return db
     .query(sqlQuery, sqlParams)
     .then(({ rows }) => {
