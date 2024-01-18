@@ -19,33 +19,33 @@ module.exports.fetchArticles = (topic) => {
   if (!validTopics.includes(topic)) {
     return Promise.reject({ status: 404, msg: "Not Found" });
   }
-  let sqlQuery = `SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles`;
+  let sqlQuery = `
+  SELECT 
+  articles.article_id, 
+  articles.title, 
+  articles.topic, 
+  articles.author, 
+  articles.created_at, 
+  articles.votes, 
+  articles.article_img_url, 
+  CAST(COUNT(comments.article_id) AS INTEGER) AS comment_count 
+  FROM comments 
+  RIGHT JOIN 
+  articles 
+  ON
+  articles.article_id=comments.article_id`;
 
   const sqlParams = [];
   if (topic) {
     sqlQuery += ` WHERE topic = $1`;
     sqlParams.push(topic);
   }
-  sqlQuery += ` ORDER BY created_at DESC`;
+
+  sqlQuery += ` GROUP BY articles.article_id ORDER BY created_at DESC`;
   return db
     .query(sqlQuery, sqlParams)
     .then(({ rows }) => {
-      const articles = rows;
-      const commentedArticles = articles.map((article) => {
-        return db
-          .query(
-            `SELECT COUNT (*) FROM comments WHERE comments.article_id = $1`,
-            [article.article_id]
-          )
-          .then(({ rows }) => {
-            article.comment_count = Number(rows[0].count);
-            return article;
-          });
-      });
-      return Promise.all(commentedArticles);
-    })
-    .then((articles) => {
-      return articles;
+      return rows;
     })
     .catch((err) => {
       return Promise.reject({ status: 500, msg: "Something Went Wrong" });
@@ -54,21 +54,25 @@ module.exports.fetchArticles = (topic) => {
 
 module.exports.fetchArticleByArticleId = (article_Id) => {
   return db
-    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_Id])
+    .query(
+      `
+    SELECT
+    articles.*,
+    CAST(COUNT(comments.article_id) AS INTEGER) AS comment_count 
+    FROM articles 
+    LEFT JOIN 
+    comments 
+    ON
+    articles.article_id=comments.article_id 
+    WHERE articles.article_id = $1 
+    GROUP BY articles.article_id`,
+      [article_Id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article Not Found" });
       }
-      const article = rows[0];
-      return db
-        .query(
-          `SELECT COUNT (*) FROM comments WHERE comments.article_id = $1`,
-          [article_Id]
-        )
-        .then(({ rows }) => {
-          article.comment_count = Number(rows[0].count);
-          return article;
-        });
+      return rows[0];
     });
 };
 
