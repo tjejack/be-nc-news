@@ -26,8 +26,7 @@
     "husky": "^8.0.2",
     "jest": "^27.5.1",
     "jest-extended": "^2.0.0",
-    "jest-sorted": "^1.0.14",
-    "pg-format": "^1.0.4"
+    "jest-sorted": "^1.0.14"
   },
   "dependencies": {
     "dotenv": "^16.0.0",
@@ -35,7 +34,8 @@
     "fs": "^0.0.1-security",
     "fs.promises": "^0.1.2",
     "pg": "^8.11.3",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.4",
+    "pg-format": "^1.0.4"
   },
   "jest": {
     "setupFilesAfterEnv": [
