@@ -25,8 +25,8 @@ Then, install jest and its additional matchers for the test suite.
 
 As dev dependencies, these jest files must be installed as such with the --save-dev command. See jest documentation  for more info: https://jestjs.io/docs/getting-started
 
-```npm install --save-dev jest```
-```npm install --save-dev jest-extended```
+```npm install --save-dev jest```\
+```npm install --save-dev jest-extended```\
 ```npm install --save-dev jest-sorted```
 
 The dotenv package allows you to load environment variables from your .env files(see file setup). Read about dotenv here: https://www.npmjs.com/package/dotenv 
@@ -39,7 +39,7 @@ Express is a framework which allows us to create our API more easily. See the do
 
 We will need both pg and pg-format in order to implement our SQL queries safely and reduce the risk of SQL injection.
 
-```npm install pg```
+```npm install pg```\
 ```npm install pg-format```
 
 Finally, we will need fs.promises package in order to asynchronously access our endpoints.json file at the /api endpoint.
