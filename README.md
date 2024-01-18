@@ -17,34 +17,16 @@ Or, if you have already forked this repo, copy the HTTPS link from the green 'Co
 This repository uses npm, jest, dotenv, express, fs, and pg.
 Before working with the repository, you're going to need to install these to your newly downloaded repo.
 
-First, initialise npm by typing the following command into your terminal inside the git repository 
+First, install npm by typing the following command into your terminal inside the git repository 
 
-```npm init -y```
+```npm install```
 
-Then, install jest and its additional matchers for the test suite. 
-
-As dev dependencies, these jest files must be installed as such with the --save-dev command. See jest documentation  for more info: https://jestjs.io/docs/getting-started
-
-```npm install --save-dev jest```\
-```npm install --save-dev jest-extended```\
-```npm install --save-dev jest-sorted```
-
-The dotenv package allows you to load environment variables from your .env files(see file setup). Read about dotenv here: https://www.npmjs.com/package/dotenv 
-
-```npm install dotenv --save```
-
-Express is a framework which allows us to create our API more easily. See the documentation here: https://expressjs.com/
-
-```npm install express```
-
-We will need both pg and pg-format in order to implement our SQL queries safely and reduce the risk of SQL injection.
-
-```npm install pg```\
-```npm install pg-format```
-
-Finally, we will need fs.promises package in order to asynchronously access our endpoints.json file at the /api endpoint.
-
-```npm install fs.promises```
+To find out more about the packages used, see the documentation below.
+Jest: https://jestjs.io/docs/getting-started
+Dotenv: https://www.npmjs.com/package/dotenv 
+Express: https://expressjs.com/
+pg: https://www.npmjs.com/package/pg
+fs: https://nodejs.org/api/fs.html
 
 # 3. File Setup
 Once you have cloned the repository and installed all of the necessary dependencies, you will need to set up your environment variables.
