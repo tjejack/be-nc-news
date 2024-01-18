@@ -4,15 +4,18 @@ const {
   updateArticle,
   checkArticleExists,
 } = require("../models/articles-models.js");
+const { fetchTopics } = require("../models/topics-models.js");
 
 module.exports.getArticles = (req, res, next) => {
-  fetchArticles(req.query.topic)
-    .then((articles) => {
-      res.status(200).send({ articles });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  fetchTopics().then((validTopics) => {
+    fetchArticles(req.query.topic, validTopics)
+      .then((articles) => {
+        res.status(200).send({ articles });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  });
 };
 
 module.exports.getArticleByArticleId = (req, res, next) => {

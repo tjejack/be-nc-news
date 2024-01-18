@@ -13,10 +13,14 @@ module.exports.checkArticleExists = (article_id) => {
     });
 };
 
-module.exports.fetchArticles = (topic) => {
-  const validTopics = [undefined, "cats", "mitch", "paper"];
+module.exports.fetchArticles = (queryTopic, validTopics) => {
+  const validTopicsArr = [undefined];
+  
+  validTopics.forEach((topic) => {
+    validTopicsArr.push(topic.slug)
+  })
 
-  if (!validTopics.includes(topic)) {
+  if (!validTopicsArr.includes(queryTopic)) {
     return Promise.reject({ status: 404, msg: "Not Found" });
   }
   let sqlQuery = `
@@ -36,9 +40,9 @@ module.exports.fetchArticles = (topic) => {
   articles.article_id=comments.article_id`;
 
   const sqlParams = [];
-  if (topic) {
+  if (queryTopic) {
     sqlQuery += ` WHERE topic = $1`;
-    sqlParams.push(topic);
+    sqlParams.push(queryTopic);
   }
 
   sqlQuery += ` GROUP BY articles.article_id ORDER BY created_at DESC`;
