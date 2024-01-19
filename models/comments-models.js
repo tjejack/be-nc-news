@@ -1,6 +1,5 @@
 const format = require("pg-format");
 const db = require("../db/connection.js");
-const { convertTimestampToDate } = require("../db/seeds/utils.js");
 
 module.exports.checkCommentExists = (comment_id) => {
   if (isNaN(comment_id)) {
