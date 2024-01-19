@@ -39,8 +39,6 @@ module.exports.fetchArticles = (queries, validTopics) => {
   ON
   articles.article_id=comments.article_id`;
 
-  const sqlParams = [];
-
   if (queries.topic) {
     const validTopicsArr = [];
     validTopics.forEach((topic) => {
@@ -49,8 +47,7 @@ module.exports.fetchArticles = (queries, validTopics) => {
     if (!validTopicsArr.includes(queries.topic)) {
       return Promise.reject({ status: 404, msg: "Not Found" });
     }
-    sqlQuery += ` WHERE topic = $1`;
-    sqlParams.push(queries.topic);
+    sqlQuery += ` WHERE articles.topic = '${queries.topic}'`;
   }
 
   sqlQuery += ` GROUP BY articles.article_id`;
@@ -83,27 +80,36 @@ module.exports.fetchArticles = (queries, validTopics) => {
   sqlQuery += ` ORDER BY ${orderQuery} ${orderOption}`;
 
   let pageLimit = 10;
-  if(queries.limit){
-    if(isNaN(queries.limit)){
+  if (queries.limit) {
+    if (isNaN(queries.limit)) {
       return Promise.reject({ status: 404, msg: "Not Found" });
     }
-    pageLimit = queries.limit
+    pageLimit = queries.limit;
   }
 
-  sqlQuery += ` LIMIT ${pageLimit}`
+  sqlQuery += ` LIMIT ${pageLimit}`;
 
-  if(queries.p){
-    if(isNaN(queries.p)){
+  if (queries.p) {
+    if (isNaN(queries.p)) {
       return Promise.reject({ status: 404, msg: "Not Found" });
     }
-    const pageStart = pageLimit*(queries.p-1)
-    sqlQuery += ` OFFSET ${pageStart}`
+    const pageStart = pageLimit * (queries.p - 1);
+    sqlQuery += ` OFFSET ${pageStart}`;
+  }
+
+  sqlQuery += `; SELECT CAST(COUNT(articles.article_id) AS INTEGER) FROM articles`;
+
+  if (queries.topic) {
+    sqlQuery += ` WHERE articles.topic = '${queries.topic}'`;
   }
 
   return db
-    .query(sqlQuery, sqlParams)
-    .then(({ rows }) => {
-      return rows;
+    .query(sqlQuery)
+    .then((response) => {
+      return {
+        articles: response[0].rows,
+        total_count: response[1].rows[0].count,
+      };
     })
     .catch((err) => {
       return Promise.reject({ status: 500, msg: "Something Went Wrong" });
@@ -174,7 +180,7 @@ module.exports.addArticle = (
     [articleData]
   );
   return db.query(sqlQuery).then(({ rows }) => {
-    rows[0].comment_count = 0
+    rows[0].comment_count = 0;
     return rows[0];
   });
 };

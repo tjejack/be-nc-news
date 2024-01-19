@@ -13,7 +13,7 @@ module.exports.getArticles = (req, res, next) => {
   fetchTopics().then((validTopics) => {
     fetchArticles(req.query, validTopics)
       .then((articles) => {
-        res.status(200).send({ articles });
+        res.status(200).send(articles);
       })
       .catch((err) => {
         next(err);
