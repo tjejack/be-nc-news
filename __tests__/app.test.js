@@ -190,14 +190,12 @@ describe("app", () => {
             });
         });
         test("400: invalid query", () => {
-          return (
-            request(app)
-              .get("/api/articles?notAQuery=bad")
-              // .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).toEqual("Bad Request");
-              })
-          );
+          return request(app)
+            .get("/api/articles?notAQuery=bad")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request");
+            });
         });
         test("200: takes multiple queries at one time", () => {
           return request(app)
@@ -524,19 +522,18 @@ describe("app", () => {
             .send(newArticle)
             .expect(201)
             .then(({ body }) => {
-              expect(body.article.article_id).toEqual(14);
-              expect(body.article.author).toEqual("butter_bridge");
-              expect(body.article.title).toEqual("Meow?");
-              expect(body.article.body).toEqual(
-                "I'm definitely not a cat pretending to be a human. Meow."
-              );
-              expect(body.article.topic).toEqual("cats");
-              expect(body.article.article_img_url).toEqual(
-                "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg"
-              );
-              expect(body.article.votes).toEqual(0);
+              expect(body.article).toMatchObject({
+                article_id: 14,
+                author: "butter_bridge",
+                title: "Meow?",
+                body: "I'm definitely not a cat pretending to be a human. Meow.",
+                topic: "cats",
+                article_img_url:
+                  "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+                votes: 0,
+                comment_count: 0,
+              });
               expect(body.article.hasOwnProperty("created_at")).toEqual(true);
-              expect(body.article.comment_count).toEqual(0);
             });
         });
         test("201: article_img_url defaults when nothing is passed for that key", () => {
@@ -551,19 +548,18 @@ describe("app", () => {
             .send(newArticle)
             .expect(201)
             .then(({ body }) => {
-              expect(body.article.article_id).toEqual(14);
-              expect(body.article.author).toEqual("butter_bridge");
-              expect(body.article.title).toEqual("Meow?");
-              expect(body.article.body).toEqual(
-                "I'm definitely not a cat pretending to be a human. Meow."
-              );
-              expect(body.article.topic).toEqual("cats");
-              expect(body.article.article_img_url).toEqual(
-                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-              );
-              expect(body.article.votes).toEqual(0);
+              expect(body.article).toMatchObject({
+                article_id: 14,
+                author: "butter_bridge",
+                title: "Meow?",
+                body: "I'm definitely not a cat pretending to be a human. Meow.",
+                topic: "cats",
+                article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                votes: 0,
+                comment_count: 0,
+              });
               expect(body.article.hasOwnProperty("created_at")).toEqual(true);
-              expect(body.article.comment_count).toEqual(0);
             });
         });
         test("400: returns bad request when missing information", () => {
