@@ -18,8 +18,8 @@
     },
     "/articles": {
       "GET /api/articles": {
-        "description": "serves an array of all articles sorted in descending order",
-        "queries": ["topic", "sort_by", "order"],
+        "description": "serves an object holding an array of articles and the total number of articles found",
+        "queries": ["topic", "sort_by", "order", "limit", "p"],
         "body": "N/A",
         "exampleResponse": {
           "articles": [
@@ -33,7 +33,8 @@
               "votes": 0,
               "comment_count": 6
             }
-          ]
+          ],
+          "total_count": 1
         }
       },
       "GET /api/articles/:article_id": {
