@@ -252,11 +252,11 @@ describe("app", () => {
             .get("/api/articles?sort_by=article_id&limit=5&p=2&order=ASC")
             .then(({ body }) => {
               expect(body.articles.length).toEqual(5);
-              expect(body.articles[0].article_id).toEqual(6)
-              expect(body.articles[1].article_id).toEqual(7)
-              expect(body.articles[2].article_id).toEqual(8)
-              expect(body.articles[3].article_id).toEqual(9)
-              expect(body.articles[4].article_id).toEqual(10)
+              expect(body.articles[0].article_id).toEqual(6);
+              expect(body.articles[1].article_id).toEqual(7);
+              expect(body.articles[2].article_id).toEqual(8);
+              expect(body.articles[3].article_id).toEqual(9);
+              expect(body.articles[4].article_id).toEqual(10);
             });
         });
         test("200: if p is takes user beyond end of articles, returns empty array", () => {
@@ -272,6 +272,22 @@ describe("app", () => {
             .expect(404)
             .then(({ body }) => {
               expect(body.msg).toEqual("Not Found");
+            });
+        });
+        test("200: returns a total_count property displaying the total number of articles", () => {
+          return request(app)
+            .get("/api/articles?limit=5")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.total_count).toEqual(13);
+            });
+        });
+        test("200: total_count obeys filters", () => {
+          return request(app)
+            .get("/api/articles?limit=5&topic=mitch")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.total_count).toEqual(12);
             });
         });
       });
