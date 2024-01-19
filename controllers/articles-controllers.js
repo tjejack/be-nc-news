@@ -3,12 +3,14 @@ const {
   fetchArticleByArticleId,
   updateArticle,
   checkArticleExists,
+  addArticle,
 } = require("../models/articles-models.js");
-const { fetchTopics } = require("../models/topics-models.js");
+
+const { fetchTopics, checkTopicExists } = require("../models/topics-models.js");
+const { checkUserExists } = require("../models/users-models.js");
 
 module.exports.getArticles = (req, res, next) => {
-  fetchTopics()
-  .then((validTopics) => {
+  fetchTopics().then((validTopics) => {
     fetchArticles(req.query, validTopics)
       .then((articles) => {
         res.status(200).send({ articles });
@@ -39,6 +41,27 @@ module.exports.patchArticle = (req, res, next) => {
     .then((result) => {
       const article = result[0];
       res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+module.exports.postArticle = (req, res, next) => {
+  const realTopic = checkTopicExists(req.body.topic);
+  const realUser = checkUserExists(req.body.author);
+  Promise.all([realTopic, realUser])
+  .then(() => {
+      return addArticle(
+        req.body.author,
+        req.body.title,
+        req.body.body,
+        req.body.topic,
+        req.body.article_img_url
+      );
+    })
+    .then((article) => {
+      res.status(201).send({ article });
     })
     .catch((err) => {
       next(err);

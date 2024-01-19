@@ -190,14 +190,12 @@ describe("app", () => {
             });
         });
         test("400: invalid query", () => {
-          return (
-            request(app)
-              .get("/api/articles?notAQuery=bad")
-              // .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).toEqual("Bad Request");
-              })
-          );
+          return request(app)
+            .get("/api/articles?notAQuery=bad")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request");
+            });
         });
         test("200: takes multiple queries at one time", () => {
           return request(app)
@@ -507,6 +505,108 @@ describe("app", () => {
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).toEqual("Bad Request");
+            });
+        });
+      });
+      describe("POST /api/articles", () => {
+        test("201: creates a new article and responds with the new article", () => {
+          const newArticle = {
+            author: "butter_bridge",
+            title: "Meow?",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "cats",
+            article_img_url: "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.article).toMatchObject({
+                article_id: 14,
+                author: "butter_bridge",
+                title: "Meow?",
+                body: "I'm definitely not a cat pretending to be a human. Meow.",
+                topic: "cats",
+                article_img_url:
+                  "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+                votes: 0,
+                comment_count: 0,
+              });
+              expect(body.article.hasOwnProperty("created_at")).toEqual(true);
+            });
+        });
+        test("201: article_img_url defaults when nothing is passed for that key", () => {
+          const newArticle = {
+            author: "butter_bridge",
+            title: "Meow?",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "cats",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.article).toMatchObject({
+                article_id: 14,
+                author: "butter_bridge",
+                title: "Meow?",
+                body: "I'm definitely not a cat pretending to be a human. Meow.",
+                topic: "cats",
+                article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                votes: 0,
+                comment_count: 0,
+              });
+              expect(body.article.hasOwnProperty("created_at")).toEqual(true);
+            });
+        });
+        test("400: returns bad request when missing information", () => {
+          const newArticle = {
+            author: "butter_bridge",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "cats",
+            article_img_url: "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - Missing Properties");
+            });
+        });
+        test("400: returns bad request when author does not exist", () => {
+          const newArticle = {
+            author: "catMan",
+            title: "Meow?",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "cats",
+            article_img_url: "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - No Such User");
+            });
+        });
+        test("400: returns bad request when topic does not exist", () => {
+          const newArticle = {
+            author: "butter_bridge",
+            title: "Meow?",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "DEFNINITELYNOTCATS",
+            article_img_url: "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - No Such Topic");
             });
         });
       });

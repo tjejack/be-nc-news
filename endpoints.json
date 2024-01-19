@@ -79,7 +79,7 @@
         }
       },
       "POST /api/articles/:article_id/comments": {
-        "description": "posts a new comment, serves the new comment, requires body of ",
+        "description": "posts a new comment, serves the new comment",
         "queries": [],
         "body": { "body": "comment text", "username": "valid_user" },
         "exampleResponse": {
@@ -90,6 +90,31 @@
             "author": "icellusedkars",
             "article_id": 5,
             "created_at": 1591682400000
+          }
+        }
+      },
+      "POST /api/articles": {
+        "description": "posts a new article, serves the new article; article_img_url is optional",
+        "queries": [],
+        "body": {
+          "author": "butter_bridge",
+          "title": "Meow?",
+          "body": "I'm definitely not a cat pretending to be a human. Meow.",
+          "topic": "cats",
+          "article_img_url": "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg"
+        },
+        "exampleResponse": {
+          "article": {
+            "article_id": 14,
+            "author": "butter_bridge",
+            "title": "Meow?",
+            "body": "I'm definitely not a cat pretending to be a human. Meow.",
+            "topic": "cats",
+            "created_at": "2024-01-02T15:59:13.341Z",
+            "article_img_url":
+              "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+            "votes": 0,
+            "comment_count": 0
           }
         }
       },

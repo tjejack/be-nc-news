@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const format = require("pg-format");
 
 module.exports.checkArticleExists = (article_id) => {
   if (isNaN(article_id)) {
@@ -125,4 +126,35 @@ module.exports.updateArticle = (article_id, inc_votes = 0) => {
     .catch((err) => {
       return Promise.reject({ status: 400, msg: "Bad Request" });
     });
+};
+
+module.exports.addArticle = (
+  author,
+  title,
+  body,
+  topic,
+  image = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+) => {
+  const articleData = [author, title, body, topic, image];
+
+  if (articleData.includes(undefined)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request - Missing Properties",
+    });
+  }
+
+  const date = new Date();
+  const created_at = date.toISOString();
+  articleData.push(created_at);
+  articleData.push(0);
+
+  const sqlQuery = format(
+    `INSERT INTO articles (author, title, body, topic, article_img_url, created_at, votes) VALUES %L RETURNING *`,
+    [articleData]
+  );
+  return db.query(sqlQuery).then(({ rows }) => {
+    rows[0].comment_count = 0
+    return rows[0];
+  });
 };
