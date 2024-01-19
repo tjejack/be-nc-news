@@ -533,6 +533,83 @@ describe("app", () => {
             });
         });
       });
+      describe("PATCH /api/comments/:comment_id", () => {
+        test("200: returns the comment with updated votes value", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment).toEqual({
+                comment_id: 1,
+                body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                votes: 17,
+                author: "butter_bridge",
+                article_id: 9,
+                created_at: "2020-04-06T12:17:00.000Z",
+              });
+            });
+        });
+        test("200: returns the comment with updated votes value when votes are negative", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: -10 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment).toEqual({
+                comment_id: 1,
+                body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                votes: 6,
+                author: "butter_bridge",
+                article_id: 9,
+                created_at: "2020-04-06T12:17:00.000Z",
+              });
+            });
+        });
+        test("200: no inc_votes passed, returns comment unchanged", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ updatedVotes: 10 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment).toEqual({
+                comment_id: 1,
+                body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                votes: 16,
+                author: "butter_bridge",
+                article_id: 9,
+                created_at: "2020-04-06T12:17:00.000Z",
+              });
+            });
+        });
+        test("404: comment valid id but does not exist", () => {
+          return request(app)
+            .patch("/api/comments/1001")
+            .send({ inc_votes: 10 })
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Comment Not Found");
+            });
+        });
+        test("400: comment invalid id", () => {
+          return request(app)
+            .patch("/api/comments/ImNotAcomment")
+            .send({ inc_votes: -10 })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request");
+            });
+        });
+        test("400: inc_votes invalid data type", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: "add ten to votes" })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request");
+            });
+        });
+      });
     });
     describe("/users", () => {
       describe("GET /api/users", () => {

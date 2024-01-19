@@ -1,7 +1,9 @@
 const {
+  checkCommentExists,
   fetchArticleComments,
   addComment,
   removeComment,
+  updateComment,
 } = require("../models/comments-models.js");
 const { checkArticleExists } = require("../models/articles-models.js");
 const { checkUserExists } = require("../models/users-models.js");
@@ -48,6 +50,19 @@ module.exports.deleteComment = (req, res, next) => {
   removeComment(req.params.comment_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+module.exports.patchComment = (req, res, next) => {
+  checkCommentExists(req.params.comment_id)
+    .then(() => {
+      return updateComment(req.params.comment_id, req.body.inc_votes);
+    })
+    .then((comment) => {
+      res.status(200).send({ comment });
     })
     .catch((err) => {
       next(err);
