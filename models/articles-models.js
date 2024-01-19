@@ -15,7 +15,7 @@ module.exports.checkArticleExists = (article_id) => {
 };
 
 module.exports.fetchArticles = (queries, validTopics) => {
-  const validQueries = ["topic", "sort_by", "order"];
+  const validQueries = ["topic", "sort_by", "order", "limit", "p"];
   const queriesPassed = Object.keys(queries);
   for (let i = 0; i < queriesPassed.length; i++) {
     if (!validQueries.includes(queriesPassed[i])) {
@@ -79,7 +79,27 @@ module.exports.fetchArticles = (queries, validTopics) => {
     }
     orderOption = allCapsOrder;
   }
+
   sqlQuery += ` ORDER BY ${orderQuery} ${orderOption}`;
+
+  let pageLimit = 10;
+  if(queries.limit){
+    if(isNaN(queries.limit)){
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    }
+    pageLimit = queries.limit
+  }
+
+  sqlQuery += ` LIMIT ${pageLimit}`
+
+  if(queries.p){
+    if(isNaN(queries.p)){
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    }
+    const pageStart = pageLimit*(queries.p-1)
+    sqlQuery += ` OFFSET ${pageStart}`
+  }
+
   return db
     .query(sqlQuery, sqlParams)
     .then(({ rows }) => {
