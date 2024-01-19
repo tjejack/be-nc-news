@@ -85,7 +85,7 @@ describe("app", () => {
         });
         test("200: returns the array of articles with all standard article properties", () => {
           return request(app)
-            .get("/api/articles")
+            .get("/api/articles?limit=20")
             .then(({ body }) => {
               expect(body.articles.length).toEqual(13);
               body.articles.forEach((article) => {
@@ -128,7 +128,7 @@ describe("app", () => {
         });
         test("200: returns articles of a given topic", () => {
           return request(app)
-            .get("/api/articles?topic=mitch")
+            .get("/api/articles?topic=mitch&limit=20")
             .then(({ body }) => {
               expect(body.articles.length).toEqual(12);
               body.articles.forEach((article) => {
@@ -159,7 +159,7 @@ describe("app", () => {
         });
         test("200: returns articles sorted by any given column", () => {
           return request(app)
-            .get("/api/articles?sort_by=votes")
+            .get("/api/articles?sort_by=votes&limit=20")
             .then(({ body }) => {
               expect(body.articles.length).toEqual(13);
               expect(body.articles).toBeSortedBy("votes", { descending: true });
@@ -175,7 +175,7 @@ describe("app", () => {
         });
         test("200: returns articles sorted in any given order", () => {
           return request(app)
-            .get("/api/articles?order=ASC")
+            .get("/api/articles?order=ASC&limit=20")
             .then(({ body }) => {
               expect(body.articles.length).toEqual(13);
               expect(body.articles).toBeSortedBy("created_at");
@@ -199,10 +199,79 @@ describe("app", () => {
         });
         test("200: takes multiple queries at one time", () => {
           return request(app)
-            .get("/api/articles?topic=mitch&sort_by=title&order=ASC")
+            .get("/api/articles?topic=mitch&sort_by=title&order=ASC&limit=20")
             .then(({ body }) => {
               expect(body.articles.length).toEqual(12);
               expect(body.articles).toBeSortedBy("title");
+            });
+        });
+        test("200: accepts limit query and returns limit number of articles, starting at the first", () => {
+          return request(app)
+            .get("/api/articles?limit=5")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(5);
+            });
+        });
+        test("200: if limit is greater than the number of articles, returns all articles", () => {
+          return request(app)
+            .get("/api/articles?limit=50")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(13);
+            });
+        });
+        test("200: limit can be used alongside other queries", () => {
+          return request(app)
+            .get("/api/articles?limit=5&topic=mitch")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(5);
+              body.articles.forEach((article) => {
+                expect(article.topic).toEqual("mitch");
+              });
+            });
+        });
+        test("404: if limit is invalid data type", () => {
+          return request(app)
+            .get("/api/articles?limit=endless")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Not Found");
+            });
+        });
+        test("200: p can be used alongside other queries", () => {
+          return request(app)
+            .get("/api/articles?limit=5&topic=mitch&p=1")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(5);
+              body.articles.forEach((article) => {
+                expect(article.topic).toEqual("mitch");
+              });
+            });
+        });
+        test("200: accepts p query and returns the correct offset", () => {
+          return request(app)
+            .get("/api/articles?sort_by=article_id&limit=5&p=2&order=ASC")
+            .then(({ body }) => {
+              expect(body.articles.length).toEqual(5);
+              expect(body.articles[0].article_id).toEqual(6)
+              expect(body.articles[1].article_id).toEqual(7)
+              expect(body.articles[2].article_id).toEqual(8)
+              expect(body.articles[3].article_id).toEqual(9)
+              expect(body.articles[4].article_id).toEqual(10)
+            });
+        });
+        test("200: if p is takes user beyond end of articles, returns empty array", () => {
+          return request(app)
+            .get("/api/articles?p=20")
+            .then(({ body }) => {
+              expect(body.articles).toEqual([]);
+            });
+        });
+        test("404: if p is invalid data type", () => {
+          return request(app)
+            .get("/api/articles?p=Dogs")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Not Found");
             });
         });
       });
@@ -555,7 +624,7 @@ describe("app", () => {
                 body: "I'm definitely not a cat pretending to be a human. Meow.",
                 topic: "cats",
                 article_img_url:
-                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                 votes: 0,
                 comment_count: 0,
               });
