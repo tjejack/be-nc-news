@@ -28,16 +28,24 @@ describe("app", () => {
         return request(app)
           .get("/api")
           .then(({ body }) => {
-            for (const key in body.endpoints) {
-              expect(body.endpoints[key].hasOwnProperty("description")).toBe(
-                true
-              );
-              expect(body.endpoints[key].hasOwnProperty("queries")).toBe(true);
+            for (const key in body.endpoints.api) {
+              for (const subkey in body.endpoints.api) {
+                expect(
+                  body.endpoints.api[key][subkey].hasOwnProperty("description")
+                ).toBe(true);
+                expect(
+                  body.endpoints.api[key][subkey].hasOwnProperty("queries")
+                ).toBe(true);
 
-              expect(body.endpoints[key].hasOwnProperty("body")).toBe(true);
-              expect(
-                body.endpoints[key].hasOwnProperty("exampleResponse")
-              ).toBe(true);
+                expect(
+                  body.endpoints.api[key][subkey].hasOwnProperty("body")
+                ).toBe(true);
+                expect(
+                  body.endpoints.api[key][subkey].hasOwnProperty(
+                    "exampleResponse"
+                  )
+                ).toBe(true);
+              }
             }
           });
       });
@@ -182,12 +190,14 @@ describe("app", () => {
             });
         });
         test("400: invalid query", () => {
-          return request(app)
-            .get("/api/articles?notAQuery=bad")
-            // .expect(400)
-            .then(({ body }) => {
-              expect(body.msg).toEqual("Bad Request");
-            });
+          return (
+            request(app)
+              .get("/api/articles?notAQuery=bad")
+              // .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toEqual("Bad Request");
+              })
+          );
         });
         test("200: takes multiple queries at one time", () => {
           return request(app)
@@ -537,6 +547,30 @@ describe("app", () => {
                 expect(user.hasOwnProperty("name")).toBe(true);
                 expect(user.hasOwnProperty("avatar_url")).toBe(true);
               });
+            });
+        });
+      });
+      describe("GET /api/users/:username", () => {
+        test("200: if exists, returns the correct user specified by username", () => {
+          return request(app)
+            .get("/api/users/butter_bridge")
+            .expect(200)
+            .then(({ body }) => {
+              const expectedOutput = {
+                username: "butter_bridge",
+                name: "jonny",
+                avatar_url:
+                  "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+              };
+              expect(body.user).toMatchObject(expectedOutput);
+            });
+        });
+        test("404: no such user", () => {
+          return request(app)
+            .get("/api/users/666")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("User Not Found");
             });
         });
       });
