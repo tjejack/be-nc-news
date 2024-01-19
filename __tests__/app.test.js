@@ -510,6 +510,110 @@ describe("app", () => {
             });
         });
       });
+      describe("POST /api/articles", () => {
+        test("201: creates a new article and responds with the new article", () => {
+          const newArticle = {
+            author: "butter_bridge",
+            title: "Meow?",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "cats",
+            article_img_url: "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.article.article_id).toEqual(14);
+              expect(body.article.author).toEqual("butter_bridge");
+              expect(body.article.title).toEqual("Meow?");
+              expect(body.article.body).toEqual(
+                "I'm definitely not a cat pretending to be a human. Meow."
+              );
+              expect(body.article.topic).toEqual("cats");
+              expect(body.article.article_img_url).toEqual(
+                "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg"
+              );
+              expect(body.article.votes).toEqual(0);
+              expect(body.article.hasOwnProperty("created_at")).toEqual(true);
+              expect(body.article.comment_count).toEqual(0);
+            });
+        });
+        test("201: article_img_url defaults when nothing is passed for that key", () => {
+          const newArticle = {
+            author: "butter_bridge",
+            title: "Meow?",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "cats",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.article.article_id).toEqual(14);
+              expect(body.article.author).toEqual("butter_bridge");
+              expect(body.article.title).toEqual("Meow?");
+              expect(body.article.body).toEqual(
+                "I'm definitely not a cat pretending to be a human. Meow."
+              );
+              expect(body.article.topic).toEqual("cats");
+              expect(body.article.article_img_url).toEqual(
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+              );
+              expect(body.article.votes).toEqual(0);
+              expect(body.article.hasOwnProperty("created_at")).toEqual(true);
+              expect(body.article.comment_count).toEqual(0);
+            });
+        });
+        test("400: returns bad request when missing information", () => {
+          const newArticle = {
+            author: "butter_bridge",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "cats",
+            article_img_url: "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - Missing Properties");
+            });
+        });
+        test("400: returns bad request when author does not exist", () => {
+          const newArticle = {
+            author: "catMan",
+            title: "Meow?",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "cats",
+            article_img_url: "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - No Such User");
+            });
+        });
+        test("400: returns bad request when topic does not exist", () => {
+          const newArticle = {
+            author: "butter_bridge",
+            title: "Meow?",
+            body: "I'm definitely not a cat pretending to be a human. Meow.",
+            topic: "DEFNINITELYNOTCATS",
+            article_img_url: "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
+          };
+          return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - No Such Topic");
+            });
+        });
+      });
     });
     describe("/comments", () => {
       describe("DELETE /api/comments/:comment_id", () => {
