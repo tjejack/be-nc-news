@@ -540,6 +540,30 @@ describe("app", () => {
             });
         });
       });
+      describe('GET /api/users/:username', () => {
+        test("200: if exists, returns the correct user specified by username", () => {
+          return request(app)
+            .get("/api/users/butter_bridge")
+            .expect(200)
+            .then(({ body }) => {
+              const expectedOutput = {
+                username: 'butter_bridge',
+                name: 'jonny',
+                avatar_url:
+                  'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+              }
+              expect(body.user).toMatchObject(expectedOutput);
+            });
+        });
+        test("404: no such user", () => {
+          return request(app)
+            .get("/api/users/666")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("User Not Found");
+            });
+        });
+      })
     });
   });
 });
