@@ -30,6 +30,7 @@
               "author": "weegembump",
               "body": "Text from the article..",
               "created_at": "2018-05-30T15:59:13.341Z",
+              "article_img_url": "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
               "votes": 0,
               "comment_count": 6
             }
@@ -49,6 +50,7 @@
             "author": "weegembump",
             "body": "Text from the article..",
             "created_at": "2018-05-30T15:59:13.341Z",
+            "article_img_url": "https://pbs.twimg.com/media/D1uOSyeU0AAwOZW.jpg",
             "votes": 0,
             "comment_count": 6
           }
