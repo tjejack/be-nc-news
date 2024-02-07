@@ -1,5 +1,11 @@
 module.exports = [
   {
+    username: 'anonymous',
+    name: 'Anon',
+    avatar_url:
+      'https://t4.ftcdn.net/jpg/01/06/72/79/360_F_106727924_lb4hNMxPuj3FQdWKO53aZ4f6YYOjjCSK.jpg'
+  },
+  {
     username: 'tickle122',
     name: 'Tom Tickle',
     avatar_url:
