@@ -60,7 +60,7 @@ module.exports.fetchArticles = (queries, validTopics) => {
       "author",
       "created_at",
       "votes",
-      "article_image_url",
+      "comment_count",
     ];
     if (!validSortQueries.includes(queries.sort_by)) {
       return Promise.reject({ status: 404, msg: "Not Found" });
