@@ -2,7 +2,11 @@
 
 Hosted version: https://nc-news-o4bo.onrender.com/
 
-NC News or Northcoders News is a backend project to generate a functional API for a database of users, articles, comments, and topics for a fictional news website.
+NC News or Northcoders News is a back-end project to generate a functional API for a database of users, articles, comments, and topics for a fictional news website. It is the back-end counterpart to my NC News WebApp.
+
+FE Repo: https://github.com/tjejack/fe-nc-news
+
+FE Hosted: https://nc-news-tj-jack.netlify.app/
 
 If you wish to use this database yourself:
 
