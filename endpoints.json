@@ -14,6 +14,17 @@
         "exampleResponse": {
           "topics": [{ "slug": "football", "description": "Footie!" }]
         }
+      },
+      "POST /api/topics": {
+        "description": "posts a new topic, serves the new topic",
+        "queries": [],
+        "body": { "slug": "topic name", "description": "description of topic" },
+        "exampleResponse": {
+          "topic": {
+            "slug": "health",
+            "description": "put snails on your face and hope that mercury is not in gatorade"
+          }
+        }
       }
     },
     "/articles": {
