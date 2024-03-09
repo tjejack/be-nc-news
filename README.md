@@ -25,12 +25,12 @@ First, install npm by typing the following command into your terminal inside the
 
 ```npm install```
 
-To find out more about the packages used, see the documentation below.
-Jest: https://jestjs.io/docs/getting-started
-Dotenv: https://www.npmjs.com/package/dotenv 
-Express: https://expressjs.com/
-pg: https://www.npmjs.com/package/pg
-fs: https://nodejs.org/api/fs.html
+To find out more about the packages used, see the documentation below.  
+Jest: https://jestjs.io/docs/getting-started  
+Dotenv: https://www.npmjs.com/package/dotenv  
+Express: https://expressjs.com/  
+pg: https://www.npmjs.com/package/pg  
+fs: https://nodejs.org/api/fs.html  
 
 # 3. File Setup
 Once you have cloned the repository and installed all of the necessary dependencies, you will need to set up your environment variables.
@@ -55,5 +55,14 @@ First, you will need to create your SQL databases.
 Then, you will need to seed them with your test and development data respectively.
 
 ```npm run seed```
+
+# Skills Demonstrated
+Querying a database.  
+Using a TDD approach to cover both the happy and error paths.  
+Setting a RESTful API with a number of endpoints which cover CRUD operations.  
+Setting up parametric endpoints.  
+Handling complex queries.  
+Manipulating data to respond to client requirements.  
+Hosting your server and DB.
 
 # This repository requires node v21.2.0 and postgres v14.10.
