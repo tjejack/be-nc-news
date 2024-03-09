@@ -72,6 +72,38 @@ describe("app", () => {
             });
         });
       });
+      describe("POST /api/topics", () => {
+        test("201: creates a new topic and responds with the new topic", () => {
+          const newTopic = {
+            slug: "Health",
+            description:
+              "put snails on your face and hope that mercury is not in gatorade",
+          };
+          return request(app)
+            .post("/api/topics")
+            .send(newTopic)
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.topic).toMatchObject({
+                slug: "Health",
+                description:
+                  "put snails on your face and hope that mercury is not in gatorade",
+              });
+            });
+        });
+        test("400: returns bad request when missing information", () => {
+          const newTopic = {
+            description: "hello world",
+          };
+          return request(app)
+            .post("/api/topics")
+            .send(newTopic)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Bad Request - Missing Properties");
+            });
+        });
+      });
     });
     describe("/articles", () => {
       describe("GET /api/articles", () => {
