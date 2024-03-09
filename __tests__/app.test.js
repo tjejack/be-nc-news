@@ -361,7 +361,7 @@ describe("app", () => {
         });
         test("200: returns the array of comments for the correct article with all standard comment properties", () => {
           return request(app)
-            .get("/api/articles/1/comments")
+            .get("/api/articles/1/comments?limit=20")
             .then(({ body }) => {
               expect(body.comments.length).toBe(11);
               body.comments.forEach((comment) => {
@@ -404,6 +404,63 @@ describe("app", () => {
             .expect(404)
             .then(({ body }) => {
               expect(body.msg).toEqual("Article Not Found");
+            });
+        });
+        test("200: accepts limit query and returns limit number of comments, starting at the first", () => {
+          return request(app)
+            .get("/api/articles/1/comments?limit=5")
+            .then(({ body }) => {
+              expect(body.comments.length).toEqual(5);
+            });
+        });
+        test("200: if limit is greater than the number of comments, returns all comments", () => {
+          return request(app)
+            .get("/api/articles/1/comments?limit=50")
+            .then(({ body }) => {
+              expect(body.comments.length).toEqual(11);
+            });
+        });
+        test("404: if limit is invalid data type", () => {
+          return request(app)
+            .get("/api/articles/1/comments?limit=endless")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Not Found");
+            });
+        });
+        test("200: accepts p query and returns the correct offset", () => {
+          return request(app)
+            .get("/api/articles/1/comments?limit=5&p=2")
+            .then(({ body }) => {
+              expect(body.comments.length).toEqual(5);
+              expect(body.comments[0].comment_id).toEqual(8);
+              expect(body.comments[1].comment_id).toEqual(6);
+              expect(body.comments[2].comment_id).toEqual(12);
+              expect(body.comments[3].comment_id).toEqual(3);
+              expect(body.comments[4].comment_id).toEqual(4);
+            });
+        });
+        test("200: if p is takes user beyond end of articles, returns empty array", () => {
+          return request(app)
+            .get("/api/articles/1/comments?p=20")
+            .then(({ body }) => {
+              expect(body.comments).toEqual([]);
+            });
+        });
+        test("404: if p is invalid data type", () => {
+          return request(app)
+            .get("/api/articles/1/comments?p=Dogs")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toEqual("Not Found");
+            });
+        });
+        test("200: returns a total_count property displaying the total number of comments", () => {
+          return request(app)
+            .get("/api/articles/1/comments?limit=5")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.total_count).toEqual(18);
             });
         });
       });
