@@ -11,10 +11,10 @@ const { checkUserExists } = require("../models/users-models.js");
 module.exports.getArticleComments = (req, res, next) => {
   checkArticleExists(req.params.article_id)
     .then(() => {
-      return fetchArticleComments(req.params.article_id);
+      return fetchArticleComments(req.params.article_id, req.query);
     })
-    .then((comments) => {
-      res.status(200).send({ comments });
+    .then(({comments, total_count}) => {
+      res.status(200).send({ comments, total_count });
     })
     .catch((err) => {
       next(err);
