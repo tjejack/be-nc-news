@@ -146,6 +146,12 @@
             "created_at": 1591682400000
           }
         }
+      },
+      "DELETE /api/articles/:article_id": {
+        "description": "deletes the article comment",
+        "queries": [],
+        "body": "N/A",
+        "exampleResponse": "N/A - no body only status code 204"
       }
     },
     "/comments": {
