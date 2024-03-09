@@ -4,6 +4,7 @@ const {
   updateArticle,
   checkArticleExists,
   addArticle,
+  removeArticle,
 } = require("../models/articles-models.js");
 
 const { fetchTopics, checkTopicExists } = require("../models/topics-models.js");
@@ -51,7 +52,7 @@ module.exports.postArticle = (req, res, next) => {
   const realTopic = checkTopicExists(req.body.topic);
   const realUser = checkUserExists(req.body.author);
   Promise.all([realTopic, realUser])
-  .then(() => {
+    .then(() => {
       return addArticle(
         req.body.author,
         req.body.title,
@@ -62,6 +63,16 @@ module.exports.postArticle = (req, res, next) => {
     })
     .then((article) => {
       res.status(201).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+module.exports.deleteArticle = (req, res, next) => {
+  removeArticle(req.params.article_id)
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);
